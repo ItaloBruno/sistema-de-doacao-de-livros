@@ -40,7 +40,7 @@ def buscar_usuarios():
 
 
 @app.put('/usuarios/{id_do_usuario}', response_model=UsuarioAtualizado)
-def update_user(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
+def atualizar_usuario(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
@@ -53,7 +53,7 @@ def update_user(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
 
 
 @app.delete('/usuarios/{id_do_usuario}', response_model=RespostaDoSistema)
-def delete_user(id_do_usuario: int):
+def deletar_usuario(id_do_usuario: int):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
             status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
