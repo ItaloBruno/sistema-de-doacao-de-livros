@@ -12,38 +12,38 @@ def cliente():
 
 
 def test_pagina_inicial_deve_retornar_ok_e_ola_mundo(cliente):
-    resposta = cliente.get('/')
+    resposta = cliente.get("/")
 
     assert resposta.status_code == HTTPStatus.OK
-    assert resposta.json() == {'message': 'Olá Mundo!'}
+    assert resposta.json() == {"message": "Olá Mundo!"}
 
 
 def teste_criar_usuario(cliente):
     resposta = cliente.post(
-        '/usuarios/',
+        "/usuarios/",
         json={
-            'nome': 'alice',
-            'email': 'alice@example.com',
-            'senha': 'secret',
+            "nome": "alice",
+            "email": "alice@example.com",
+            "senha": "secret",
         },
     )
     assert resposta.status_code == HTTPStatus.CREATED
     assert resposta.json() == {
-        'nome': 'alice',
-        'email': 'alice@example.com',
-        'id': 1,
+        "nome": "alice",
+        "email": "alice@example.com",
+        "id": 1,
     }
 
 
 def teste_buscar_usuarios(cliente):
-    resposta = cliente.get('/usuarios/')
+    resposta = cliente.get("/usuarios/")
     assert resposta.status_code == HTTPStatus.OK
     assert resposta.json() == {
-        'usuarios': [
+        "usuarios": [
             {
-                'nome': 'alice',
-                'email': 'alice@example.com',
-                'id': 1,
+                "nome": "alice",
+                "email": "alice@example.com",
+                "id": 1,
             }
         ]
     }
@@ -51,60 +51,60 @@ def teste_buscar_usuarios(cliente):
 
 def teste_atualizar_usuario(cliente):
     resposta = cliente.put(
-        '/usuarios/1',
+        "/usuarios/1",
         json={
-            'nome': 'bob',
-            'email': 'bob@example.com',
-            'senha': 'mynewpassword',
+            "nome": "bob",
+            "email": "bob@example.com",
+            "senha": "mynewpassword",
         },
     )
     assert resposta.status_code == HTTPStatus.OK
     assert resposta.json() == {
-        'nome': 'bob',
-        'email': 'bob@example.com',
-        'id': 1,
+        "nome": "bob",
+        "email": "bob@example.com",
+        "id": 1,
     }
 
 
 def teste_erro_usuario_nao_encontrado_ao_atualizar_usuario(cliente):
     resposta = cliente.put(
-        '/usuarios/5',
+        "/usuarios/5",
         json={
-            'nome': 'bob',
-            'email': 'bob@example.com',
-            'senha': 'mynewpassword',
+            "nome": "bob",
+            "email": "bob@example.com",
+            "senha": "mynewpassword",
         },
     )
     assert resposta.status_code == HTTPStatus.NOT_FOUND
-    assert resposta.json() == {'detail': 'Usuário não encontrado'}
+    assert resposta.json() == {"detail": "Usuário não encontrado"}
 
 
 def teste_buscar_usuario_especifico(cliente):
-    resposta = cliente.get('/usuarios/1')
+    resposta = cliente.get("/usuarios/1")
     assert resposta.status_code == HTTPStatus.OK
     assert resposta.json() == {
-        'nome': 'bob',
-        'email': 'bob@example.com',
-        'id': 1,
+        "nome": "bob",
+        "email": "bob@example.com",
+        "id": 1,
     }
 
 
 def teste_erro_usuario_nao_encontrado_ao_buscar_usuario_especifico(cliente):
-    resposta = cliente.get('/usuarios/5')
+    resposta = cliente.get("/usuarios/5")
     assert resposta.status_code == HTTPStatus.NOT_FOUND
-    assert resposta.json() == {'detail': 'Usuário não encontrado'}
+    assert resposta.json() == {"detail": "Usuário não encontrado"}
 
 
 def teste_deletar_usuario(cliente):
-    resposta = cliente.delete('/usuarios/1')
+    resposta = cliente.delete("/usuarios/1")
 
     assert resposta.status_code == HTTPStatus.OK
-    assert resposta.json() == {'mensagem': 'Usuário deletado'}
+    assert resposta.json() == {"mensagem": "Usuário deletado"}
 
 
 def teste_erro_usuario_nao_encontrado_ao_deletar_usuario(cliente):
     resposta = cliente.delete(
-        '/usuarios/5',
+        "/usuarios/5",
     )
     assert resposta.status_code == HTTPStatus.NOT_FOUND
-    assert resposta.json() == {'detail': 'Usuário não encontrado'}
+    assert resposta.json() == {"detail": "Usuário não encontrado"}

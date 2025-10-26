@@ -17,13 +17,13 @@ app = FastAPI()
 banco_de_dados = []
 
 
-@app.get('/')
+@app.get("/")
 def pagina_inicial(response_model=RespostaDoSistema):
-    return {'message': 'Olá Mundo!'}
+    return {"message": "Olá Mundo!"}
 
 
 @app.post(
-    '/usuarios/', status_code=HTTPStatus.CREATED, response_model=UsuarioCriado
+    "/usuarios/", status_code=HTTPStatus.CREATED, response_model=UsuarioCriado
 )
 def criar_usuario(usuario: CriacaoDeUsuario):
     usuario_com_id = UsuarioDB(
@@ -35,16 +35,16 @@ def criar_usuario(usuario: CriacaoDeUsuario):
     return usuario_com_id
 
 
-@app.get('/usuarios/', response_model=ListagemDeUsuario)
+@app.get("/usuarios/", response_model=ListagemDeUsuario)
 def buscar_usuarios():
-    return {'usuarios': banco_de_dados}
+    return {"usuarios": banco_de_dados}
 
 
-@app.put('/usuarios/{id_do_usuario}', response_model=UsuarioAtualizado)
+@app.put("/usuarios/{id_do_usuario}", response_model=UsuarioAtualizado)
 def atualizar_usuario(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+            status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado"
         )
 
     usuario_com_id = UsuarioDB(**usuario.model_dump(), id=id_do_usuario)
@@ -53,23 +53,23 @@ def atualizar_usuario(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
     return usuario_com_id
 
 
-@app.delete('/usuarios/{id_do_usuario}', response_model=RespostaDoSistema)
+@app.delete("/usuarios/{id_do_usuario}", response_model=RespostaDoSistema)
 def deletar_usuario(id_do_usuario: int):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+            status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado"
         )
 
     del banco_de_dados[id_do_usuario - 1]
 
-    return {'mensagem': 'Usuário deletado'}
+    return {"mensagem": "Usuário deletado"}
 
 
-@app.get('/usuarios/{id_do_usuario}', response_model=UsuarioEspecifico)
+@app.get("/usuarios/{id_do_usuario}", response_model=UsuarioEspecifico)
 def buscar_usuario_especifico(id_do_usuario: int):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+            status_code=HTTPStatus.NOT_FOUND, detail="Usuário não encontrado"
         )
 
     usuario = banco_de_dados[id_do_usuario - 1]
