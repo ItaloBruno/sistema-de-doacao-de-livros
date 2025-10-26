@@ -10,6 +10,7 @@ from sistema_de_doacao_de_livros.schemas import (
     UsuarioAtualizado,
     UsuarioCriado,
     UsuarioDB,
+    UsuarioEspecifico,
 )
 
 app = FastAPI()
@@ -62,3 +63,14 @@ def deletar_usuario(id_do_usuario: int):
     del banco_de_dados[id_do_usuario - 1]
 
     return {'mensagem': 'Usuário deletado'}
+
+
+@app.get('/usuarios/{id_do_usuario}', response_model=UsuarioEspecifico)
+def buscar_usuario_especifico(id_do_usuario: int):
+    if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
+        raise HTTPException(
+            status_code=HTTPStatus.NOT_FOUND, detail='Usuário não encontrado'
+        )
+
+    usuario = banco_de_dados[id_do_usuario - 1]
+    return usuario

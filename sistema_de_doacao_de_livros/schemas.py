@@ -37,5 +37,9 @@ class ListagemDeUsuario(BaseModel):
     usuarios: list[Usuario]
 
 
+class UsuarioEspecifico(Usuario):
+    pass
+
+
 class RespostaDoSistema(BaseModel):
     mensagem: str
