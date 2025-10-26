@@ -65,9 +65,33 @@ def teste_atualizar_usuario(cliente):
         'id': 1,
     }
 
+def teste_erro_usuario_nao_encontrado_ao_atualizar_usuario(cliente):
+    resposta = cliente.put(
+        '/usuarios/5',
+        json={
+            'nome': 'bob',
+            'email': 'bob@example.com',
+            'senha': 'mynewpassword',
+        },
+    )
+    assert resposta.status_code == HTTPStatus.NOT_FOUND
+    assert resposta.json() == {
+        'detail': 'Usuário não encontrado'
+    }
+
 
 def teste_deletar_usuario(cliente):
     resposta = cliente.delete('/usuarios/1')
 
     assert resposta.status_code == HTTPStatus.OK
     assert resposta.json() == {'mensagem': 'Usuário deletado'}
+
+
+def teste_erro_usuario_nao_encontrado_ao_deletar_usuario(cliente):
+    resposta = cliente.delete(
+        '/usuarios/5',
+    )
+    assert resposta.status_code == HTTPStatus.NOT_FOUND
+    assert resposta.json() == {
+        'detail': 'Usuário não encontrado'
+    }
