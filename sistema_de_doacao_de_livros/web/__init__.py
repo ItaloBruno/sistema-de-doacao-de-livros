@@ -1,3 +1,3 @@
 from . import rotas
 
-__all__ = ['rotas']
+__all__ = ["rotas"]

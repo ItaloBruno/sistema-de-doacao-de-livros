@@ -3,6 +3,6 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/')
+@router.get("/")
 def api_inicio():
-    return {'message': 'Olá Mundo!'}
+    return {"message": "Olá Mundo!"}

@@ -5,10 +5,10 @@ from fastapi.templating import Jinja2Templates
 router = APIRouter()
 
 templates = Jinja2Templates(
-    directory='sistema_de_doacao_de_livros/web/templates'
+    directory="sistema_de_doacao_de_livros/web/templates"
 )
 
 
-@router.get('/', response_class=HTMLResponse)
+@router.get("/", response_class=HTMLResponse)
 async def pagina_inicial(request: Request):
-    return templates.TemplateResponse('inicio.html', {'request': request})
+    return templates.TemplateResponse("inicio.html", {"request": request})
