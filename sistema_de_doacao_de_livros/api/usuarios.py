@@ -13,12 +13,12 @@ from .schemas import (
     UsuarioEspecifico,
 )
 
-router = APIRouter()
+rotas_api_usuarios = APIRouter()
 
 banco_de_dados: list[UsuarioDB] = []
 
 
-@router.post(
+@rotas_api_usuarios.post(
     "/usuarios/", status_code=HTTPStatus.CREATED, response_model=UsuarioCriado
 )
 def criar_usuario(usuario: CriacaoDeUsuario):
@@ -31,12 +31,14 @@ def criar_usuario(usuario: CriacaoDeUsuario):
     return usuario_com_id
 
 
-@router.get("/usuarios/", response_model=ListagemDeUsuario)
+@rotas_api_usuarios.get("/usuarios/", response_model=ListagemDeUsuario)
 def buscar_usuarios():
     return {"usuarios": banco_de_dados}
 
 
-@router.put("/usuarios/{id_do_usuario}", response_model=UsuarioAtualizado)
+@rotas_api_usuarios.put(
+    "/usuarios/{id_do_usuario}", response_model=UsuarioAtualizado
+)
 def atualizar_usuario(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
@@ -49,7 +51,9 @@ def atualizar_usuario(id_do_usuario: int, usuario: AtualizacaoDeUsuario):
     return usuario_com_id
 
 
-@router.delete("/usuarios/{id_do_usuario}", response_model=RespostaDoSistema)
+@rotas_api_usuarios.delete(
+    "/usuarios/{id_do_usuario}", response_model=RespostaDoSistema
+)
 def deletar_usuario(id_do_usuario: int):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(
@@ -61,7 +65,9 @@ def deletar_usuario(id_do_usuario: int):
     return {"mensagem": "Usuário deletado"}
 
 
-@router.get("/usuarios/{id_do_usuario}", response_model=UsuarioEspecifico)
+@rotas_api_usuarios.get(
+    "/usuarios/{id_do_usuario}", response_model=UsuarioEspecifico
+)
 def buscar_usuario_especifico(id_do_usuario: int):
     if id_do_usuario > len(banco_de_dados) or id_do_usuario < 1:
         raise HTTPException(

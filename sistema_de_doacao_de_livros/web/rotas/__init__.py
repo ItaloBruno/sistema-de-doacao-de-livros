@@ -1,3 +1,4 @@
-from .inicio import router
+from .inicio import rotas_inicio
+from .instituicoes import rotas_instituicoes
 
-__all__ = ["router"]
+__all__ = ["rotas_inicio", "rotas_instituicoes"]

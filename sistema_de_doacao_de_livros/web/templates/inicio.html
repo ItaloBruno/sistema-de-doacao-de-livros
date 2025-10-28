@@ -1,5 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<p>Página inicial</p>
+<main>
+		<section id="destaque" aria-labelledby="destaque-titulo">
+			<h2 id="destaque-titulo">Nome do Projeto</h2>
+			<p>Plataforma para doação de livros a instituições sociais.</p>
+		</section>
+
+		<div aria-hidden="false" class="acoes-rapidas">
+			<nav aria-label="Ações rápidas">
+				<a href="/login">Entrar</a>
+			</nav>
+		</div>
+
+	<section id="lista-instituicoes" aria-labelledby="instituicoes-titulo">
+		<h3 id="instituicoes-titulo">Para doadores</h3>
+		<p>Encontre instituições que recebem doações de livros e escolha onde doar.</p>
+		<p>
+			<a href="/instituicoes">Ir para a lista de instituições</a>
+		</p>
+	</section>
+
+	<section id="cadastro-instituicoes" aria-labelledby="cadastro-titulo">
+		<h3 id="cadastro-titulo">Para instituições</h3>
+		<p>Cadastre sua instituição para receber doações de livros.</p>
+		<p>
+			<a href="/instituicoes/cadastrar">Quero cadastrar minha instituição</a>
+		</p>
+	</section>
+</main>
 {% endblock %}

@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 
-router = APIRouter()
+rotas_api_inicio = APIRouter()
 
 
-@router.get("/")
+@rotas_api_inicio.get("/")
 def api_inicio():
     return {"message": "Olá Mundo!"}
