@@ -14,3 +14,21 @@ async def pagina_instituicoes(request: Request):
     return templates.TemplateResponse(
         "instituicoes.html", {"request": request}
     )
+
+
+@rotas_instituicoes.get("/instituicoes/cadastrar", response_class=HTMLResponse)
+async def pagina_instituicoes_cadastrar(request: Request):
+    return templates.TemplateResponse(
+        "cadastrar_instituicao.html", {"request": request}
+    )
+
+
+@rotas_instituicoes.get(
+    "/instituicao",
+    response_class=HTMLResponse,
+)
+async def pagina_home_instituicao(request: Request):
+    return templates.TemplateResponse(
+        "home_instituicao.html",
+        {"request": request},
+    )
