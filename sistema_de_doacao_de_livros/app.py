@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from sistema_de_doacao_de_livros.api.inicio import rotas_api_inicio
+from sistema_de_doacao_de_livros.api.instituicao_social.api import (
+    rotas_api_instituicao_social,
+)
 from sistema_de_doacao_de_livros.api.usuarios import rotas_api_usuarios
 from sistema_de_doacao_de_livros.web.rotas.autenticacao import (
     rotas_autenticacao,
@@ -30,3 +33,4 @@ app.include_router(rotas_doador)
 app.include_router(rotas_solicitacoes)
 app.include_router(rotas_api_inicio, prefix="/api")
 app.include_router(rotas_api_usuarios, prefix="/api")
+app.include_router(rotas_api_instituicao_social, prefix="/api")
