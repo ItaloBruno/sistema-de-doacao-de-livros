@@ -260,3 +260,6 @@ http-client.private.env.json
 # Apifox Helper cache
 .idea/.cache/.Apifox_Helper
 .idea/ApifoxUploaderProjectSetting.xml
+
+# Uploaded files
+sistema_de_doacao_de_livros/web/static/uploads/
