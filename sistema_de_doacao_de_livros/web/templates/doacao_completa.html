@@ -1,0 +1,604 @@
+{% extends "base.html" %}
+
+{% block titulo %}Fazer Doação - Sistema de doação de livros{% endblock %}
+
+{% block conteudo %}
+<div class="w-full min-h-screen">
+    <header class="border-b border-gray-200">
+        <div class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 py-4">
+            <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">
+                <a href="/">Sistema de doação de livros</a>
+            </h1>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-gray-900">Fazer Doação</h2>
+            <p class="mt-2 text-gray-700" id="nome-instituicao">Carregando...</p>
+        </div>
+
+        <div id="mensagem-erro" class="hidden rounded-md bg-red-50 p-4 mb-6">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800" id="texto-erro"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="mensagem-sucesso" class="hidden rounded-md bg-green-50 p-4 mb-6">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800" id="texto-sucesso"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="modal-login" class="hidden fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg p-8 max-w-md w-full">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Fazer Login</h3>
+                <form id="form-login-modal">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input
+                                type="email"
+                                id="login-email"
+                                required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            >
+                        </div>
+                        <div>
+                            <label for="login-senha" class="block text-sm font-medium text-gray-700">Senha</label>
+                            <input
+                                type="password"
+                                id="login-senha"
+                                required
+                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                            >
+                        </div>
+                    </div>
+                    <div class="mt-6 flex gap-3">
+                        <button
+                            type="submit"
+                            class="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                        >
+                            Entrar
+                        </button>
+                        <button
+                            type="button"
+                            onclick="fecharModalLogin()"
+                            class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Seus Dados</h3>
+                <button
+                    id="btn-login"
+                    onclick="abrirModalLogin()"
+                    class="text-sm text-indigo-600 hover:text-indigo-500"
+                >
+                    Já tenho conta
+                </button>
+            </div>
+            
+            <div id="form-dados-doador" class="space-y-4">
+                <div>
+                    <label for="doador-nome" class="block text-sm font-medium text-gray-700">Nome completo</label>
+                    <input
+                        type="text"
+                        id="doador-nome"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="doador-email" class="block text-sm font-medium text-gray-700">Email</label>
+                        <input
+                            type="email"
+                            id="doador-email"
+                            required
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <div>
+                        <label for="doador-telefone" class="block text-sm font-medium text-gray-700">Telefone</label>
+                        <input
+                            type="tel"
+                            id="doador-telefone"
+                            required
+                            placeholder="(11) 98765-4321"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                </div>
+                <div>
+                    <label for="doador-senha" class="block text-sm font-medium text-gray-700">Senha</label>
+                    <input
+                        type="password"
+                        id="doador-senha"
+                        required
+                        minlength="6"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                    <p class="mt-1 text-sm text-gray-500">Mínimo 6 caracteres</p>
+                </div>
+            </div>
+
+            <div id="info-doador-logado" class="hidden">
+                <p class="text-gray-700">Logado como: <strong id="nome-doador-logado"></strong></p>
+                <button
+                    onclick="deslogar()"
+                    class="mt-2 text-sm text-indigo-600 hover:text-indigo-500"
+                >
+                    Usar outra conta
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white shadow rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Adicionar Livros</h3>
+            
+            <div class="space-y-4">
+                <div>
+                    <label for="busca-livro" class="block text-sm font-medium text-gray-700">Buscar livro</label>
+                    <input
+                        type="text"
+                        id="busca-livro"
+                        placeholder="Digite o título do livro"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                    <div id="resultados-busca" class="mt-2 hidden bg-white border border-gray-300 rounded-md max-h-60 overflow-y-auto"></div>
+                </div>
+
+                <div>
+                    <button
+                        type="button"
+                        onclick="mostrarFormNovoLivro()"
+                        class="text-sm text-indigo-600 hover:text-indigo-500"
+                    >
+                        + Adicionar livro manualmente
+                    </button>
+                </div>
+
+                <div id="form-novo-livro" class="hidden border-t pt-4 space-y-4">
+                    <h4 class="font-medium text-gray-900">Novo Livro</h4>
+                    <div>
+                        <label for="novo-titulo" class="block text-sm font-medium text-gray-700">Título</label>
+                        <input
+                            type="text"
+                            id="novo-titulo"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <div>
+                        <label for="novo-subtitulo" class="block text-sm font-medium text-gray-700">Subtítulo (opcional)</label>
+                        <input
+                            type="text"
+                            id="novo-subtitulo"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <div>
+                        <label for="novo-autores" class="block text-sm font-medium text-gray-700">Autores (separados por vírgula)</label>
+                        <input
+                            type="text"
+                            id="novo-autores"
+                            placeholder="Ex: Machado de Assis, Lima Barreto"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <div>
+                        <label for="novo-isbn" class="block text-sm font-medium text-gray-700">ISBN (opcional)</label>
+                        <input
+                            type="text"
+                            id="novo-isbn"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <button
+                        type="button"
+                        onclick="criarNovoLivro()"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                    >
+                        Criar e Adicionar Livro
+                    </button>
+                </div>
+
+                <div id="detalhes-livro-selecionado" class="hidden border-t pt-4 space-y-4">
+                    <h4 class="font-medium text-gray-900">Detalhes do Livro</h4>
+                    <div id="info-livro-selecionado"></div>
+                    <div>
+                        <label for="foto-url" class="block text-sm font-medium text-gray-700">URL da foto (opcional)</label>
+                        <input
+                            type="url"
+                            id="foto-url"
+                            placeholder="https://exemplo.com/foto.jpg"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        >
+                    </div>
+                    <div>
+                        <label for="observacao" class="block text-sm font-medium text-gray-700">Observação (opcional)</label>
+                        <textarea
+                            id="observacao"
+                            rows="3"
+                            placeholder="Ex: Livro em bom estado, capa dura"
+                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                        ></textarea>
+                    </div>
+                    <button
+                        type="button"
+                        onclick="adicionarLivroADoacao()"
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
+                    >
+                        Adicionar à Doação
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="livros-doacao-container" class="hidden bg-white shadow rounded-lg p-6 mb-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Livros na Doação</h3>
+            <div id="livros-doacao" class="space-y-4"></div>
+        </div>
+
+        <div class="flex justify-end gap-4">
+            <a
+                href="/instituicoes"
+                class="px-6 py-3 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+                Cancelar
+            </a>
+            <button
+                id="btn-enviar"
+                onclick="enviarDoacao()"
+                disabled
+                class="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+                Enviar Solicitação de Doação
+            </button>
+        </div>
+    </main>
+</div>
+
+<script>
+const urlParts = window.location.pathname.split('/');
+const instituicaoId = parseInt(urlParts[2]);
+
+let livroSelecionado = null;
+let livrosNaDoacao = [];
+let usuarioLogado = null;
+let timeoutBusca = null;
+
+async function carregarInstituicao() {
+    try {
+        const response = await fetch(`/api/instituicoes/${instituicaoId}`);
+        const instituicao = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('nome-instituicao').textContent = `Doando para: ${instituicao.nome}`;
+        }
+    } catch (error) {
+        console.error('Erro ao carregar instituição:', error);
+    }
+}
+
+function verificarUsuarioLogado() {
+    const usuario = sessionStorage.getItem('usuario');
+    if (usuario) {
+        usuarioLogado = JSON.parse(usuario);
+        if (usuarioLogado.tipo === 'doador') {
+            mostrarUsuarioLogado();
+        }
+    }
+}
+
+function mostrarUsuarioLogado() {
+    document.getElementById('form-dados-doador').classList.add('hidden');
+    document.getElementById('info-doador-logado').classList.remove('hidden');
+    document.getElementById('nome-doador-logado').textContent = usuarioLogado.nome;
+    document.getElementById('btn-login').classList.add('hidden');
+}
+
+function deslogar() {
+    usuarioLogado = null;
+    sessionStorage.removeItem('usuario');
+    document.getElementById('form-dados-doador').classList.remove('hidden');
+    document.getElementById('info-doador-logado').classList.add('hidden');
+    document.getElementById('btn-login').classList.remove('hidden');
+}
+
+function abrirModalLogin() {
+    document.getElementById('modal-login').classList.remove('hidden');
+}
+
+function fecharModalLogin() {
+    document.getElementById('modal-login').classList.add('hidden');
+}
+
+document.getElementById('form-login-modal').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('login-email').value;
+    const senha = document.getElementById('login-senha').value;
+    
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, senha }),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.tipo === 'doador') {
+            usuarioLogado = data;
+            sessionStorage.setItem('usuario', JSON.stringify(data));
+            mostrarUsuarioLogado();
+            fecharModalLogin();
+        } else {
+            alert('Email ou senha incorretos, ou você não é um doador');
+        }
+    } catch (error) {
+        alert('Erro ao fazer login');
+    }
+});
+
+document.getElementById('busca-livro').addEventListener('input', (e) => {
+    const termo = e.target.value.trim();
+    
+    clearTimeout(timeoutBusca);
+    
+    if (termo.length < 2) {
+        document.getElementById('resultados-busca').classList.add('hidden');
+        return;
+    }
+    
+    timeoutBusca = setTimeout(() => buscarLivros(termo), 300);
+});
+
+async function buscarLivros(termo) {
+    try {
+        const response = await fetch(`/api/livros/buscar?titulo=${encodeURIComponent(termo)}`);
+        const livros = await response.json();
+        
+        const resultados = document.getElementById('resultados-busca');
+        resultados.innerHTML = '';
+        
+        if (livros.length === 0) {
+            resultados.innerHTML = '<p class="p-3 text-gray-500">Nenhum livro encontrado</p>';
+        } else {
+            livros.forEach(livro => {
+                const div = document.createElement('div');
+                div.className = 'p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0';
+                div.innerHTML = `
+                    <p class="font-medium">${livro.titulo}</p>
+                    ${livro.subtitulo ? `<p class="text-sm text-gray-600">${livro.subtitulo}</p>` : ''}
+                    <p class="text-sm text-gray-500">${livro.autores.join(', ')}</p>
+                `;
+                div.onclick = () => selecionarLivro(livro);
+                resultados.appendChild(div);
+            });
+        }
+        
+        resultados.classList.remove('hidden');
+    } catch (error) {
+        console.error('Erro ao buscar livros:', error);
+    }
+}
+
+function selecionarLivro(livro) {
+    livroSelecionado = livro;
+    document.getElementById('busca-livro').value = livro.titulo;
+    document.getElementById('resultados-busca').classList.add('hidden');
+    
+    const info = document.getElementById('info-livro-selecionado');
+    info.innerHTML = `
+        <div class="bg-gray-50 p-4 rounded-md">
+            <p class="font-medium text-lg">${livro.titulo}</p>
+            ${livro.subtitulo ? `<p class="text-gray-600">${livro.subtitulo}</p>` : ''}
+            <p class="text-gray-700 mt-2">Autores: ${livro.autores.join(', ')}</p>
+            ${livro.isbn ? `<p class="text-gray-600 text-sm">ISBN: ${livro.isbn}</p>` : ''}
+        </div>
+    `;
+    
+    document.getElementById('detalhes-livro-selecionado').classList.remove('hidden');
+    document.getElementById('form-novo-livro').classList.add('hidden');
+}
+
+function mostrarFormNovoLivro() {
+    document.getElementById('form-novo-livro').classList.remove('hidden');
+    document.getElementById('detalhes-livro-selecionado').classList.add('hidden');
+    livroSelecionado = null;
+}
+
+async function criarNovoLivro() {
+    const titulo = document.getElementById('novo-titulo').value.trim();
+    const subtitulo = document.getElementById('novo-subtitulo').value.trim();
+    const autoresStr = document.getElementById('novo-autores').value.trim();
+    const isbn = document.getElementById('novo-isbn').value.trim();
+    
+    if (!titulo || !autoresStr) {
+        alert('Título e autores são obrigatórios');
+        return;
+    }
+    
+    const autores = autoresStr.split(',').map(a => a.trim()).filter(a => a);
+    
+    try {
+        const response = await fetch('/api/livros', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                titulo,
+                subtitulo: subtitulo || null,
+                autores,
+                isbn: isbn || null,
+            }),
+        });
+        
+        const livro = await response.json();
+        
+        if (response.ok) {
+            selecionarLivro(livro);
+            document.getElementById('novo-titulo').value = '';
+            document.getElementById('novo-subtitulo').value = '';
+            document.getElementById('novo-autores').value = '';
+            document.getElementById('novo-isbn').value = '';
+        } else {
+            alert('Erro ao criar livro');
+        }
+    } catch (error) {
+        alert('Erro ao conectar com o servidor');
+    }
+}
+
+function adicionarLivroADoacao() {
+    if (!livroSelecionado) return;
+    
+    const fotoUrl = document.getElementById('foto-url').value.trim();
+    const observacao = document.getElementById('observacao').value.trim();
+    
+    livrosNaDoacao.push({
+        livro: livroSelecionado,
+        foto_url: fotoUrl || null,
+        observacao: observacao || null,
+    });
+    
+    atualizarListaLivros();
+    
+    livroSelecionado = null;
+    document.getElementById('busca-livro').value = '';
+    document.getElementById('foto-url').value = '';
+    document.getElementById('observacao').value = '';
+    document.getElementById('detalhes-livro-selecionado').classList.add('hidden');
+    
+    document.getElementById('btn-enviar').disabled = false;
+}
+
+function atualizarListaLivros() {
+    const container = document.getElementById('livros-doacao-container');
+    const lista = document.getElementById('livros-doacao');
+    
+    if (livrosNaDoacao.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    lista.innerHTML = '';
+    
+    livrosNaDoacao.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'border border-gray-200 rounded-md p-4';
+        div.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <p class="font-medium">${item.livro.titulo}</p>
+                    ${item.livro.subtitulo ? `<p class="text-sm text-gray-600">${item.livro.subtitulo}</p>` : ''}
+                    <p class="text-sm text-gray-500">${item.livro.autores.join(', ')}</p>
+                    ${item.observacao ? `<p class="text-sm text-gray-700 mt-2"><strong>Obs:</strong> ${item.observacao}</p>` : ''}
+                </div>
+                <button
+                    onclick="removerLivro(${index})"
+                    class="text-red-600 hover:text-red-800 ml-4"
+                >
+                    Remover
+                </button>
+            </div>
+        `;
+        lista.appendChild(div);
+    });
+}
+
+function removerLivro(index) {
+    livrosNaDoacao.splice(index, 1);
+    atualizarListaLivros();
+    
+    if (livrosNaDoacao.length === 0) {
+        document.getElementById('btn-enviar').disabled = true;
+    }
+}
+
+async function enviarDoacao() {
+    if (livrosNaDoacao.length === 0) {
+        alert('Adicione pelo menos um livro à doação');
+        return;
+    }
+    
+    let dados = {
+        instituicao_id: instituicaoId,
+        livros: livrosNaDoacao.map(item => ({
+            livro_id: item.livro.id,
+            foto_url: item.foto_url,
+            observacao: item.observacao,
+        })),
+    };
+    
+    if (usuarioLogado) {
+        dados.doador_id = usuarioLogado.usuario_id;
+    } else {
+        const nome = document.getElementById('doador-nome').value.trim();
+        const email = document.getElementById('doador-email').value.trim();
+        const telefone = document.getElementById('doador-telefone').value.trim();
+        const senha = document.getElementById('doador-senha').value;
+        
+        if (!nome || !email || !telefone || !senha) {
+            alert('Preencha todos os campos do doador');
+            return;
+        }
+        
+        dados.doador_nome = nome;
+        dados.doador_email = email;
+        dados.doador_telefone = telefone;
+        dados.doador_senha = senha;
+    }
+    
+    try {
+        const response = await fetch('/api/doacoes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dados),
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            document.getElementById('texto-sucesso').textContent = 'Doação enviada com sucesso! Redirecionando...';
+            document.getElementById('mensagem-sucesso').classList.remove('hidden');
+            
+            setTimeout(() => {
+                if (usuarioLogado) {
+                    window.location.href = '/doador';
+                } else {
+                    window.location.href = '/entrar';
+                }
+            }, 2000);
+        } else {
+            document.getElementById('texto-erro').textContent = result.detail || 'Erro ao enviar doação';
+            document.getElementById('mensagem-erro').classList.remove('hidden');
+        }
+    } catch (error) {
+        document.getElementById('texto-erro').textContent = 'Erro ao conectar com o servidor';
+        document.getElementById('mensagem-erro').classList.remove('hidden');
+    }
+}
+
+carregarInstituicao();
+verificarUsuarioLogado();
+</script>
+{% endblock %}

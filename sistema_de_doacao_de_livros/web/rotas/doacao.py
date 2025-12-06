@@ -15,6 +15,6 @@ templates = Jinja2Templates(
 )
 async def pagina_doacao(id_instituicao: int, request: Request):
     return templates.TemplateResponse(
-        "doacao.html",
+        "doacao_completa.html",
         {"request": request},
     )
