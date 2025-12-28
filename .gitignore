@@ -263,3 +263,6 @@ http-client.private.env.json
 
 # Uploaded files
 sistema_de_doacao_de_livros/web/static/uploads/
+
+# TCC reference files
+tcc/tcc_yessir.md
