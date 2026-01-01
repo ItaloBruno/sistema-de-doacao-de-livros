@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block titulo %}Entrar - Sistema de doação de livros{% endblock %}
+
+{% block conteudo %}
+<div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <div>
+            <h2 class="mt-6 text-center text-3xl font-bold text-stone-900">
+                Entrar na sua conta
+            </h2>
+            <p class="mt-2 text-center text-sm text-stone-600">
+                Ou
+                <a href="/registrar" class="font-medium text-amber-700 hover:text-amber-800">
+                    crie uma nova conta
+                </a>
+            </p>
+        </div>
+
+        <div id="mensagem-erro" class="hidden rounded-md bg-red-50 p-4">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800" id="texto-erro"></h3>
+                </div>
+            </div>
+        </div>
+
+        <form class="mt-8 space-y-6" id="form-login">
+            <div class="rounded-md shadow-sm space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-stone-700">
+                        Email
+                    </label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-stone-300 placeholder-stone-500 text-stone-900 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+                        placeholder="seu@email.com"
+                    >
+                </div>
+                <div>
+                    <label for="senha" class="block text-sm font-medium text-stone-700">
+                        Senha
+                    </label>
+                    <input
+                        id="senha"
+                        name="senha"
+                        type="password"
+                        required
+                        class="mt-1 appearance-none relative block w-full px-3 py-2 border border-stone-300 placeholder-stone-500 text-stone-900 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+                        placeholder="Sua senha"
+                    >
+                </div>
+            </div>
+
+            <div>
+                <button
+                    type="submit"
+                    class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-amber-700 hover:bg-amber-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+                >
+                    Entrar
+                </button>
+            </div>
+        </form>
+
+        <div class="text-center">
+            <a href="/" class="text-sm text-amber-700 hover:text-amber-800">
+                Voltar para a página inicial
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function verificarUsuarioLogado() {
+    const usuarioStr = sessionStorage.getItem('usuario');
+    if (!usuarioStr) {
+        return;
+    }
+
+    const usuario = JSON.parse(usuarioStr);
+    if (usuario.tipo === 'doador') {
+        window.location.href = '/doador';
+    } else if (usuario.tipo === 'instituicao') {
+        window.location.href = '/instituicao';
+    }
+})();
+
+document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const senha = document.getElementById('senha').value;
+
+    try {
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, senha }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            sessionStorage.setItem('usuario', JSON.stringify(data));
+
+            if (data.tipo === 'doador') {
+                window.location.href = '/doador';
+            } else if (data.tipo === 'instituicao') {
+                window.location.href = '/instituicao';
+            }
+        } else {
+            document.getElementById('texto-erro').textContent = data.detail || 'Erro ao fazer login';
+            document.getElementById('mensagem-erro').classList.remove('hidden');
+        }
+    } catch (error) {
+        document.getElementById('texto-erro').textContent = 'Erro ao conectar com o servidor';
+        document.getElementById('mensagem-erro').classList.remove('hidden');
+    }
+});
+</script>
+{% endblock %}

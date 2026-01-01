@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block titulo %}Painel da Instituição - Sistema de doação de livros{% endblock %}
+
+{% block conteudo %}
+{% set tipo_cabecalho = 'autenticado' %}
+<div class="w-full min-h-screen">
+    {% include "componentes/cabecalho.html" with context %}
+
+    <main class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-stone-900">Solicitações de Doação</h2>
+        </div>
+
+        <div id="loading" class="text-center py-12">
+            <p class="text-stone-600">Carregando solicitações...</p>
+        </div>
+
+        <div id="sem-doacoes" class="hidden text-center py-12">
+            <p class="text-stone-600">Nenhuma solicitação de doação recebida ainda</p>
+        </div>
+
+        <div id="lista-doacoes" class="space-y-4 hidden"></div>
+    </main>
+</div>
+
+<script>
+let usuario = null;
+
+function verificarAutenticacao() {
+    const usuarioStr = sessionStorage.getItem('usuario');
+    if (!usuarioStr) {
+        window.location.href = '/entrar';
+        return;
+    }
+
+    usuario = JSON.parse(usuarioStr);
+    if (usuario.tipo !== 'instituicao') {
+        window.location.href = '/entrar';
+        return;
+    }
+
+    document.getElementById('nome-usuario').textContent = usuario.nome;
+}
+
+function sair() {
+    sessionStorage.removeItem('usuario');
+    window.location.href = '/entrar';
+}
+
+async function carregarDoacoes() {
+    try {
+        const response = await fetch(`/api/doacoes/instituicao/${usuario.usuario_id}`);
+        const doacoes = await response.json();
+
+        document.getElementById('loading').classList.add('hidden');
+
+        if (doacoes.length === 0) {
+            document.getElementById('sem-doacoes').classList.remove('hidden');
+        } else {
+            exibirDoacoes(doacoes);
+            document.getElementById('lista-doacoes').classList.remove('hidden');
+        }
+    } catch (error) {
+        document.getElementById('loading').innerHTML = '<p class="text-red-700">Erro ao carregar solicitações</p>';
+    }
+}
+
+function exibirDoacoes(doacoes) {
+    const lista = document.getElementById('lista-doacoes');
+    lista.innerHTML = '';
+
+    doacoes.forEach(doacao => {
+        const dataCriacao = new Date(doacao.data_criacao).toLocaleDateString('pt-BR');
+        const statusClass = getStatusClass(doacao.status);
+        const statusText = getStatusText(doacao.status);
+
+        const card = document.createElement('div');
+        card.className = 'bg-stone-50 rounded-lg border border-stone-300 p-6';
+        card.innerHTML = `
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex-1">
+                    <h3 class="text-lg font-semibold text-stone-900">${doacao.doador_nome}</h3>
+                    <div class="mt-2 space-y-1 text-sm text-stone-600">
+                        <p><strong>Quantidade de livros:</strong> ${doacao.quantidade_livros}</p>
+                        <p><strong>Data:</strong> ${dataCriacao}</p>
+                        <p><strong>Status:</strong> <span class="${statusClass}">${statusText}</span></p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    ${doacao.status === 'pendente' ? `
+                        <a
+                            href="/solicitacoes?doacao_id=${doacao.id}"
+                            class="px-4 py-2 bg-amber-700 text-white rounded-md hover:bg-amber-800"
+                        >
+                            Avaliar
+                        </a>
+                    ` : ''}
+                    ${doacao.status === 'aceita' ? `
+                        <a
+                            href="/solicitacoes?doacao_id=${doacao.id}"
+                            class="px-4 py-2 bg-emerald-700 text-white rounded-md hover:bg-emerald-800"
+                        >
+                            Ver Detalhes
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        lista.appendChild(card);
+    });
+}
+
+function getStatusClass(status) {
+    const classes = {
+        'pendente': 'text-amber-600 font-medium',
+        'aceita': 'text-green-600 font-medium',
+        'rejeitada': 'text-red-600 font-medium',
+        'concluida': 'text-blue-600 font-medium',
+    };
+    return classes[status] || 'text-stone-600';
+}
+
+function getStatusText(status) {
+    const texts = {
+        'pendente': 'Pendente',
+        'aceita': 'Aceita - Entrando em contato',
+        'rejeitada': 'Rejeitada',
+        'concluida': 'Concluída',
+    };
+    return texts[status] || status;
+}
+
+verificarAutenticacao();
+carregarDoacoes();
+</script>
+{% endblock %}

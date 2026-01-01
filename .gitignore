@@ -261,8 +261,8 @@ http-client.private.env.json
 .idea/.cache/.Apifox_Helper
 .idea/ApifoxUploaderProjectSetting.xml
 
-# Uploaded files
-sistema_de_doacao_de_livros/web/static/uploads/
+# VSCode
+.vscode/
 
-# TCC reference files
-tcc/tcc_yessir.md
+# Windsurf
+.windsurf
