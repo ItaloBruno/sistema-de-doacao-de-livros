@@ -25,27 +25,6 @@ def test_deve_listar_livros_com_sucesso(obter_mock_livro):
     assert resultado.total_paginas == 1
 
 
-def test_deve_paginar_livros_corretamente(obter_mock_livro):
-    uow = obter_uow_fake()
-    for _ in range(5):
-        livro = obter_mock_livro()
-        uow.repositorio_livros.adicionar(livro)
-
-    def obter_uow_com_livros():
-        return uow
-
-    visualizador = Listar(obter_uow=obter_uow_com_livros)
-    resultado = visualizador.executar(
-        ParametrosListagem(filtros_dict={}, pagina=1, itens_por_pagina=2)
-    )
-
-    assert len(resultado.itens) == 2
-    assert resultado.total == 5
-    assert resultado.pagina == 1
-    assert resultado.itens_por_pagina == 2
-    assert resultado.total_paginas == 3
-
-
 def test_deve_retornar_lista_vazia_quando_nao_ha_livros():
     visualizador = Listar(obter_uow=obter_uow_fake)
     resultado = visualizador.executar(

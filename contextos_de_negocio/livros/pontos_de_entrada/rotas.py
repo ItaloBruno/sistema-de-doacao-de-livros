@@ -19,12 +19,14 @@ from contextos_de_negocio.livros.casos_de_uso.deletar_livro import (
 from contextos_de_negocio.livros.pontos_de_entrada.esquemas import (
     ItemLivroResposta,
     RespostaAtualizarLivro,
+    RespostaBuscarLivro,
     RespostaCriarLivro,
     RespostaListarLivros,
 )
 from contextos_de_negocio.livros.pontos_de_entrada.parametros import (
     ParametrosListagemLivros,
 )
+from contextos_de_negocio.livros.visualizadores.buscar import Buscar
 from contextos_de_negocio.livros.visualizadores.listar import Listar
 from utilitarios.provedor_de_armazenamento import ProvedorDeArmazenamento
 from utilitarios.provedor_de_armazenamento.armazenamento_local import (
@@ -72,6 +74,26 @@ def listar_livros(
         pagina=resultado.pagina,
         itens_por_pagina=resultado.itens_por_pagina,
         total_paginas=resultado.total_paginas,
+    )
+
+
+@api_livros.get(
+    "/livros/{livro_id}",
+    status_code=HTTPStatus.OK,
+    response_model=RespostaBuscarLivro,
+)
+def buscar_livro(livro_id: str):
+    visualizador = Buscar(obter_uow=unidade_de_trabalho)
+    resultado = visualizador.executar(livro_id)
+
+    return RespostaBuscarLivro(
+        id=resultado.id,
+        titulo=resultado.titulo,
+        autores=resultado.autores,
+        subtitulo=resultado.subtitulo,
+        isbn=resultado.isbn,
+        observacao=resultado.observacao,
+        foto=resultado.foto,
     )
 
 

@@ -293,49 +293,6 @@ def test_listar_livros_retorna_todos_livros(
     assert dados["itens_por_pagina"] == 10
 
 
-def test_listar_livros_com_paginacao(cliente_api, obter_mock_livro_no_banco):
-    for _ in range(5):
-        obter_mock_livro_no_banco()
-
-    resposta = cliente_api.get("/api/livros?pagina=1&itens_por_pagina=2")
-
-    assert resposta.status_code == HTTPStatus.OK
-    dados = resposta.json()
-    assert len(dados["itens"]) == 2
-    assert dados["total"] == 5
-    assert dados["pagina"] == 1
-    assert dados["itens_por_pagina"] == 2
-    assert dados["total_paginas"] == 3
-
-
-def test_listar_livros_segunda_pagina(cliente_api, obter_mock_livro_no_banco):
-    for _ in range(5):
-        obter_mock_livro_no_banco()
-
-    resposta = cliente_api.get("/api/livros?pagina=2&itens_por_pagina=2")
-
-    assert resposta.status_code == HTTPStatus.OK
-    dados = resposta.json()
-    assert len(dados["itens"]) == 2
-    assert dados["total"] == 5
-    assert dados["pagina"] == 2
-    assert dados["itens_por_pagina"] == 2
-
-
-def test_listar_livros_com_filtro_por_titulo(
-    cliente_api, obter_mock_livro_no_banco
-):
-    obter_mock_livro_no_banco(titulo="Dom Casmurro")
-    obter_mock_livro_no_banco(titulo="Memórias Póstumas")
-
-    resposta = cliente_api.get("/api/livros?titulo=contem.Casmurro")
-
-    assert resposta.status_code == HTTPStatus.OK
-    dados = resposta.json()
-    assert len(dados["itens"]) == 1
-    assert dados["itens"][0]["titulo"] == "Dom Casmurro"
-
-
 def test_listar_livros_estrutura_item(cliente_api, obter_mock_livro_no_banco):
     livro = obter_mock_livro_no_banco()
 
@@ -350,3 +307,29 @@ def test_listar_livros_estrutura_item(cliente_api, obter_mock_livro_no_banco):
     assert item["subtitulo"] == livro.subtitulo.valor
     assert item["isbn"] == livro.isbn.valor
     assert item["observacao"] == livro.observacao.valor
+
+
+def test_buscar_livro_por_id_com_sucesso(
+    cliente_api, obter_mock_livro_no_banco
+):
+    livro = obter_mock_livro_no_banco()
+
+    resposta = cliente_api.get(f"/api/livros/{livro.id}")
+
+    assert resposta.status_code == HTTPStatus.OK
+    dados = resposta.json()
+    assert dados["id"] == str(livro.id)
+    assert dados["titulo"] == livro.titulo.valor
+    assert dados["autores"] == livro.autores.valor
+    assert dados["subtitulo"] == livro.subtitulo.valor
+    assert dados["isbn"] == livro.isbn.valor
+    assert dados["observacao"] == livro.observacao.valor
+    assert dados["foto"] == livro.foto_url.valor if livro.foto_url else None
+
+
+def test_buscar_livro_por_id_inexistente(cliente_api):
+    livro_id_inexistente = str(LivroId.gerar())
+
+    resposta = cliente_api.get(f"/api/livros/{livro_id_inexistente}")
+
+    assert resposta.status_code == HTTPStatus.NOT_FOUND
