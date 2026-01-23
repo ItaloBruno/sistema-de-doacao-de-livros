@@ -1,6 +1,5 @@
 from http import HTTPStatus
 from typing import Annotated, Final
-from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
@@ -13,20 +12,63 @@ from contextos_de_negocio.doador.casos_de_uso.criar_doador import (
     EntradaCriarDoadorCasoDeUso,
 )
 from contextos_de_negocio.doador.dominio.objetos_de_valor import DoadorId
-from contextos_de_negocio.doador.excecoes import DoadorNaoEncontrado
 from contextos_de_negocio.doador.pontos_de_entrada.esquemas import (
     EntradaAtualizarDoador,
     EntradaCriarDoador,
+    ItemDoadorResposta,
     RespostaAtualizarDoador,
     RespostaBuscarDoador,
     RespostaCriarDoador,
+    RespostaListarDoadores,
 )
+from contextos_de_negocio.doador.pontos_de_entrada.parametros import (
+    ParametrosListagemDoadores,
+)
+from contextos_de_negocio.doador.visualizadores.buscar import Buscar
+from contextos_de_negocio.doador.visualizadores.listar import Listar
 from utilitarios.fastapi.autenticacao import obter_usuario_autenticado
 from utilitarios.provedor_de_hash import ProvedorDeHash
 from utilitarios.provedor_de_hash.argon2 import EstrategiaArgon2
 from utilitarios.unidade_de_trabalho import unidade_de_trabalho
+from utilitarios.visualizadores.dtos import ParametrosListagem
 
 api_doador: Final[APIRouter] = APIRouter(tags=["Doador"])
+
+
+@api_doador.get(
+    "/doadores",
+    status_code=HTTPStatus.OK,
+    response_model=RespostaListarDoadores,
+)
+def listar_doadores(
+    parametros: ParametrosListagemDoadores = Depends(),
+):
+    visualizador = Listar(obter_uow=unidade_de_trabalho)
+    resultado = visualizador.executar(
+        ParametrosListagem(
+            filtros_dict=parametros.obter_filtros_dict(),
+            pagina=parametros.pagina,
+            itens_por_pagina=parametros.itens_por_pagina,
+            ordem=parametros.ordem,
+            campos=parametros.campos,
+        )
+    )
+
+    return RespostaListarDoadores(
+        itens=[
+            ItemDoadorResposta(
+                id=item.id,
+                nome=item.nome,
+                email=item.email,
+                telefone=item.telefone,
+            )
+            for item in resultado.itens
+        ],
+        total=resultado.total,
+        pagina=resultado.pagina,
+        itens_por_pagina=resultado.itens_por_pagina,
+        total_paginas=resultado.total_paginas,
+    )
 
 
 @api_doador.get(
@@ -39,19 +81,15 @@ def buscar_doador(
         DoadorId, Depends(obter_usuario_autenticado)
     ],
 ):
-    with unidade_de_trabalho() as uow:
-        doador = uow.repositorio_doadores.buscar_por_id(
-            DoadorId(UUID(doador_id))
-        )
-        if not doador:
-            raise DoadorNaoEncontrado()
+    visualizador = Buscar(obter_uow=unidade_de_trabalho)
+    item = visualizador.executar(doador_id)
 
-        return RespostaBuscarDoador(
-            id=str(doador.id),
-            nome=doador.nome.valor,
-            email=doador.email.valor,
-            telefone=doador.telefone.valor,
-        )
+    return RespostaBuscarDoador(
+        id=item.id,
+        nome=item.nome,
+        email=item.email,
+        telefone=item.telefone,
+    )
 
 
 @api_doador.put(

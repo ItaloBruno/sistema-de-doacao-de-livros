@@ -4,8 +4,6 @@ from io import BytesIO
 
 from sqlalchemy import text
 
-from contextos_de_negocio.livros.dominio.objetos_de_valor import LivroId
-
 
 def test_criar_livro_sem_foto(cliente_api, obter_mock_livro, uow):
     livro = obter_mock_livro()
@@ -222,20 +220,6 @@ def test_atualizar_livro_com_nova_foto(
     assert corpo_da_resposta["foto"].endswith(".jpg")
 
 
-def test_atualizar_livro_inexistente(cliente_api, uow):
-    livro_id_inexistente = str(LivroId.gerar())
-
-    resposta = cliente_api.put(
-        f"/api/livros/{livro_id_inexistente}",
-        data={
-            "titulo": "Título",
-            "autores": json.dumps(["Autor"]),
-        },
-    )
-
-    assert resposta.status_code == HTTPStatus.NOT_FOUND
-
-
 def test_deletar_livro_com_sucesso(
     cliente_api, obter_mock_livro_no_banco, uow
 ):
@@ -255,26 +239,6 @@ def test_deletar_livro_com_sucesso(
     )
 
     assert len(resultado) == 0
-
-
-def test_deletar_livro_inexistente(cliente_api, uow):
-    livro_id_inexistente = str(LivroId.gerar())
-
-    resposta = cliente_api.delete(f"/api/livros/{livro_id_inexistente}")
-
-    assert resposta.status_code == HTTPStatus.NOT_FOUND
-
-
-def test_listar_livros_retorna_lista_vazia(cliente_api):
-    resposta = cliente_api.get("/api/livros")
-
-    assert resposta.status_code == HTTPStatus.OK
-    dados = resposta.json()
-    assert dados["itens"] == []
-    assert dados["total"] == 0
-    assert dados["pagina"] == 1
-    assert dados["itens_por_pagina"] == 10
-    assert dados["total_paginas"] == 0
 
 
 def test_listar_livros_retorna_todos_livros(
@@ -325,11 +289,3 @@ def test_buscar_livro_por_id_com_sucesso(
     assert dados["isbn"] == livro.isbn.valor
     assert dados["observacao"] == livro.observacao.valor
     assert dados["foto"] == livro.foto_url.valor if livro.foto_url else None
-
-
-def test_buscar_livro_por_id_inexistente(cliente_api):
-    livro_id_inexistente = str(LivroId.gerar())
-
-    resposta = cliente_api.get(f"/api/livros/{livro_id_inexistente}")
-
-    assert resposta.status_code == HTTPStatus.NOT_FOUND

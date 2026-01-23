@@ -121,3 +121,37 @@ def test_obter_doador(
     assert corpo_da_resposta["telefone"] == doador_no_banco["telefone"]
     assert corpo_da_resposta["id"] == str(doador_no_banco["id"])
     assert "senha" not in corpo_da_resposta
+
+
+def test_listar_doadores_com_sucesso(cliente_api, obter_mock_doador_no_banco):
+    obter_mock_doador_no_banco(nome="Ana Silva", email="ana.silva@example.com")
+    obter_mock_doador_no_banco(
+        nome="Bruno Costa", email="bruno.costa@example.com"
+    )
+
+    resposta = cliente_api.get("/api/doadores")
+
+    assert resposta.status_code == HTTPStatus.OK
+    dados = resposta.json()
+    assert dados["total"] == 2
+    assert dados["pagina"] == 1
+    assert dados["itens_por_pagina"] == 10
+    assert dados["total_paginas"] == 1
+    assert len(dados["itens"]) == 2
+
+
+def test_listar_doadores_estrutura_item(
+    cliente_api, obter_mock_doador_no_banco
+):
+    doador = obter_mock_doador_no_banco()
+
+    resposta = cliente_api.get("/api/doadores")
+
+    assert resposta.status_code == HTTPStatus.OK
+    dados = resposta.json()
+    item = dados["itens"][0]
+    assert item["id"] == str(doador.id)
+    assert item["nome"] == doador.nome.valor
+    assert item["email"] == doador.email.valor
+    assert item["telefone"] == doador.telefone.valor
+    assert "senha" not in item

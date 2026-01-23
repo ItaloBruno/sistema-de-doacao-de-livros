@@ -1,6 +1,11 @@
 from sqlalchemy import text
 
 from contextos_de_negocio.doador.dominio.objetos_de_valor import DoadorId
+from utilitarios.objetos_de_valor.filtragem import ConjuntoFiltros
+from utilitarios.objetos_de_valor.paginacao import (
+    ItensPorPagina,
+    NumeroPagina,
+)
 
 
 def test_adicionar_doador_novo(uow, obter_mock_doador):
@@ -159,3 +164,58 @@ def test_buscar_por_email_nao_encontra_doador(uow):
     doador = uow.repositorio_doadores.buscar_por_email("naoexiste@example.com")
 
     assert doador is None
+
+
+def test_listar_doadores_com_sucesso(uow, obter_mock_doador):
+    doador1_id = DoadorId.gerar()
+    doador1 = obter_mock_doador(
+        id=doador1_id, nome="Ana Silva", email="ana@example.com"
+    )
+    doador2_id = DoadorId.gerar()
+    doador2 = obter_mock_doador(
+        id=doador2_id, nome="Bruno Costa", email="bruno@example.com"
+    )
+
+    uow.sessao_postgres.execute(
+        text(
+            """
+            INSERT INTO doadores (id, nome, email, senha, telefone)
+            VALUES (:id, :nome, :email, :senha, :telefone)
+            """
+        ),
+        {
+            "id": str(doador1.id.valor),
+            "nome": doador1.nome.valor,
+            "email": doador1.email.valor,
+            "senha": doador1.senha.valor,
+            "telefone": doador1.telefone.valor,
+        },
+    )
+    uow.sessao_postgres.execute(
+        text(
+            """
+            INSERT INTO doadores (id, nome, email, senha, telefone)
+            VALUES (:id, :nome, :email, :senha, :telefone)
+            """
+        ),
+        {
+            "id": str(doador2.id.valor),
+            "nome": doador2.nome.valor,
+            "email": doador2.email.valor,
+            "senha": doador2.senha.valor,
+            "telefone": doador2.telefone.valor,
+        },
+    )
+    uow.commit()
+
+    resultado = uow.repositorio_doadores.listar_com_filtros(
+        filtros=ConjuntoFiltros.de_dict({}),
+        pagina=NumeroPagina(1),
+        itens_por_pagina=ItensPorPagina(10),
+    )
+
+    assert resultado.total == 2
+    assert len(resultado.itens) == 2
+    assert resultado.pagina == 1
+    assert resultado.itens_por_pagina == 10
+    assert resultado.total_paginas == 1

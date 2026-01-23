@@ -37,3 +37,18 @@ class RespostaAtualizarDoador(BaseModel):
     nome: Nome
     email: Email
     telefone: Telefone
+
+
+class ItemDoadorResposta(BaseModel):
+    id: str
+    nome: Nome
+    email: Email
+    telefone: Telefone
+
+
+class RespostaListarDoadores(BaseModel):
+    itens: list[ItemDoadorResposta]
+    total: int
+    pagina: int
+    itens_por_pagina: int
+    total_paginas: int
