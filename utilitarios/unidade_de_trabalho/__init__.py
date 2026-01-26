@@ -5,27 +5,23 @@ from typing import Final, Self
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from contextos_de_negocio.doacao.repositorio import (
+    RepositorioDoacoes,
+    RepositorioDoacoesAbstrato,
+)
 from contextos_de_negocio.doador.repositorio import (
     RepositorioDoadores,
     RepositorioDoadoresAbstrato,
-)
-from contextos_de_negocio.doador.repositorio.orm import (
-    metadata as metadata_doador,
 )
 from contextos_de_negocio.instituicao.repositorio import (
     RepositorioInstituicoes,
     RepositorioInstituicoesAbstrato,
 )
-from contextos_de_negocio.instituicao.repositorio.orm import (
-    metadata as metadata_instituicao,
-)
 from contextos_de_negocio.livros.repositorio import (
     RepositorioLivros,
     RepositorioLivrosAbstrato,
 )
-from contextos_de_negocio.livros.repositorio.orm import (
-    metadata as metadata_livros,
-)
+from utilitarios.sqlalchemy.metadata import metadata
 from utilitarios.variaveis_de_ambiente import (
     VariaveisDeAmbiente,
 )
@@ -35,6 +31,7 @@ class UnidadeDeTrabalhoAbstrata(ABC):
     repositorio_doadores: RepositorioDoadoresAbstrato
     repositorio_instituicoes: RepositorioInstituicoesAbstrato
     repositorio_livros: RepositorioLivrosAbstrato
+    repositorio_doacoes: RepositorioDoacoesAbstrato
 
     @abstractmethod
     def commit(self):
@@ -65,6 +62,7 @@ class UnidadeDeTrabalho(UnidadeDeTrabalhoAbstrata):
             self._sessao_postgres
         )
         self.repositorio_livros = RepositorioLivros(self._sessao_postgres)
+        self.repositorio_doacoes = RepositorioDoacoes(self._sessao_postgres)
         return self
 
     def __exit__(self, tipo_excecao, valor_excecao, traceback_excecao) -> None:
@@ -93,9 +91,7 @@ class _GerenciadorMotor:
         if not self._motor:
             url = VariaveisDeAmbiente.URL_POSTGRES
             self._motor = create_engine(url)
-            metadata_doador.create_all(self._motor)
-            metadata_instituicao.create_all(self._motor)
-            metadata_livros.create_all(self._motor)
+            metadata.create_all(self._motor)
         return self._motor
 
 

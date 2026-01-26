@@ -1,7 +1,4 @@
-from typing import Final
-
-from sqlalchemy import Column, MetaData, Table
-from sqlalchemy.orm import registry
+from sqlalchemy import Column, Table
 
 from contextos_de_negocio.livros.dominio.entidades import Livro
 from contextos_de_negocio.livros.dominio.objetos_de_valor import (
@@ -13,6 +10,7 @@ from contextos_de_negocio.livros.dominio.objetos_de_valor import (
     SubtituloLivro,
     TituloLivro,
 )
+from utilitarios.sqlalchemy import mapper_registry, metadata
 from utilitarios.sqlalchemy.conversor_array_objeto_de_valor import (
     ConversorArrayObjetoDeValor,
 )
@@ -22,9 +20,6 @@ from utilitarios.sqlalchemy.conversor_objeto_de_valor import (
 from utilitarios.sqlalchemy.identificador_uuid import (
     ConversorIdentificadorUuid,
 )
-
-mapper_registry: Final[registry] = registry()
-metadata: Final[MetaData] = MetaData()
 
 tabela_livros = Table(
     "livros",

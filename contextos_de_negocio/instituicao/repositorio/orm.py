@@ -1,7 +1,4 @@
-from typing import Final
-
-from sqlalchemy import Column, MetaData, Table
-from sqlalchemy.orm import registry
+from sqlalchemy import Column, Table
 
 from contextos_de_negocio.instituicao.dominio.entidades import Instituicao
 from contextos_de_negocio.instituicao.dominio.objetos_de_valor import (
@@ -15,6 +12,7 @@ from contextos_de_negocio.instituicao.dominio.objetos_de_valor import (
     SiteInstituicao,
     TelefoneInstituicao,
 )
+from utilitarios.sqlalchemy import mapper_registry, metadata
 from utilitarios.sqlalchemy.conversor_data import ConversorDataFundacao
 from utilitarios.sqlalchemy.conversor_objeto_de_valor import (
     ConversorObjetoDeValor,
@@ -22,9 +20,6 @@ from utilitarios.sqlalchemy.conversor_objeto_de_valor import (
 from utilitarios.sqlalchemy.identificador_uuid import (
     ConversorIdentificadorUuid,
 )
-
-mapper_registry: Final[registry] = registry()
-metadata: Final[MetaData] = MetaData()
 
 tabela_instituicoes = Table(
     "instituicoes",

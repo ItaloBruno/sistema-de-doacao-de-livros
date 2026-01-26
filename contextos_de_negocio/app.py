@@ -6,6 +6,7 @@ from fastapi.security import HTTPBearer
 from contextos_de_negocio.autenticacao.pontos_de_entrada.rotas import (
     api_autenticacao,
 )
+from contextos_de_negocio.doacao.pontos_de_entrada.rotas import api_doacao
 from contextos_de_negocio.doador.pontos_de_entrada.rotas import api_doador
 from contextos_de_negocio.instituicao.pontos_de_entrada.rotas import (
     api_instituicao,
@@ -68,4 +69,4 @@ app.include_router(api_autenticacao, prefix="/api")
 app.include_router(api_doador, prefix="/api")
 app.include_router(api_instituicao, prefix="/api")
 app.include_router(api_livros, prefix="/api")
-# app.include_router(rotas_api_doacoes, prefix="/api")
+app.include_router(api_doacao, prefix="/api")
