@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
-rotas_instituicoes = APIRouter()
+rotas_instituicoes = APIRouter(include_in_schema=False)
 
 templates = Jinja2Templates(
     directory="sistema_de_doacao_de_livros/web/templates"
@@ -30,5 +30,16 @@ async def pagina_instituicoes_cadastrar(request: Request):
 async def pagina_home_instituicao(request: Request):
     return templates.TemplateResponse(
         "home_instituicao.html",
+        {"request": request},
+    )
+
+
+@rotas_instituicoes.get(
+    "/instituicao/editar-perfil",
+    response_class=HTMLResponse,
+)
+async def pagina_editar_perfil_instituicao(request: Request):
+    return templates.TemplateResponse(
+        "editar_perfil_instituicao.html",
         {"request": request},
     )

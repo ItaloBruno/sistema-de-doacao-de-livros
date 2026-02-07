@@ -13,7 +13,7 @@ from .schemas import (
     UsuarioEspecifico,
 )
 
-rotas_api_usuarios = APIRouter()
+rotas_api_usuarios = APIRouter(tags=["Usuários"])
 
 banco_de_dados: list[UsuarioDB] = []
 
