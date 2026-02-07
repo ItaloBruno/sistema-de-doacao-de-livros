@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block titulo %}Sistema de doação de livros{% endblock %}
+
+{% block conteudo %}
+{% set tipo_cabecalho = 'publico' %}
+<div class="w-full">
+    {% include "componentes/cabecalho.html" with context %}
+
+    <main>
+        <section id="inicial" class="py-16 sm:py-24">
+            <div class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-stone-900">Faça uma doação!</h2>
+                    <p class="mt-4 text-lg text-stone-700">Entre em contato com instituições e projetos sociais que estejam interessadas em dar um novo propósito aos seus livros.</p>
+                    <div class="mt-6">
+                        <a href="/instituicoes" class="inline-block rounded-md bg-amber-700 px-6 py-3 text-white font-medium hover:bg-amber-800 transition-colors">
+                            Quero doar
+                        </a>
+                    </div>
+                </div>
+                <div class="flex justify-center md:justify-end">
+                    <img
+                        class="w-full max-w-sm h-auto"
+                        src="{{ url_for('static', path='imagens/pagina_inicial_cangaceiro.png') }}"
+                        alt="Cangaceiro das Letras"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section id="como-funciona" class="py-16 sm:py-20">
+            <div class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8">
+                <h2 class="text-2xl sm:text-3xl font-bold text-stone-900">Como funciona?</h2>
+                <p class="mt-3 text-stone-600">O processo é rápido, simples e sem burocracias.</p>
+
+                <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <article class="rounded-xl border border-stone-300 bg-stone-50 p-6">
+                        <h3 class="text-lg font-semibold text-stone-900">1. Encontre uma instituição</h3>
+                        <p class="mt-2 text-stone-600">Utilize nossa plataforma para localizar instituições e projetos sociais que aceitam doações de livros.</p>
+                    </article>
+
+                    <article class="rounded-xl border border-stone-300 bg-stone-50 p-6">
+                        <h3 class="text-lg font-semibold text-stone-900">2. Preencha formulário de doação</h3>
+                        <p class="mt-2 text-stone-600">Preencha o formulário de doação com as informações necessárias e clique em enviar.</p>
+                    </article>
+
+                    <article class="rounded-xl border border-stone-300 bg-stone-50 p-6">
+                        <h3 class="text-lg font-semibold text-stone-900">3. Aguarde o contato</h3>
+                        <p class="mt-2 text-stone-600">Uma vez que a instituição ou projeto social receber sua solicitação, eles entrarão em contato para combinar os detalhes da doação.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="ir-para-cadastrar-instituicao" class="py-16 sm:py-20">
+            <div class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 rounded-2xl bg-amber-50 ring-1 ring-amber-700/20 p-8 sm:p-12 text-center">
+                <h2 class="text-2xl sm:text-3xl font-bold text-stone-900">Faço parte de uma instituição/projeto social</h2>
+                <p class="mt-3 text-stone-600">Faça o cadastro no nosso site para receber solicitações de doação de livros.</p>
+                <div class="mt-6">
+                    <a href="/registrar" class="inline-block rounded-md bg-amber-700 px-6 py-3 text-white font-medium hover:bg-amber-800 transition-colors">
+                        Ir para cadastro
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+{% endblock %}

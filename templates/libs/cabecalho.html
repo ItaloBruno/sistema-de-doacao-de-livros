@@ -1,0 +1,78 @@
+<header class="border-b border-stone-300 bg-stone-800 h-[64px]">
+    <div class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+        <a href="/" class="flex items-center gap-3">
+            <img src="{{ url_for('static', path='imagens/logo_header.png') }}" alt="Logo" class="h-[48px] w-auto object-contain">
+            <span class="text-2xl font-bold text-stone-100">Cangaceiro das Letras</span>
+        </a>
+
+        {% if tipo_cabecalho == 'publico' %}
+            <nav aria-label="principal">
+                <ul class="flex items-center gap-6 text-sm">
+                    <li><a class="text-stone-300 hover:text-amber-400 transition-colors" href="#como-funciona">Como funciona?</a></li>
+                    <li><a class="text-stone-300 hover:text-amber-400 transition-colors" href="#ir-para-cadastrar-instituicao">Sou uma instituição</a></li>
+                    <li><a id="link-entrar-publico" class="text-stone-300 hover:text-amber-400 transition-colors" href="/entrar">Entrar</a></li>
+                </ul>
+            </nav>
+            <script>
+                (function() {
+                    const usuarioStr = sessionStorage.getItem('usuario');
+                    if (!usuarioStr) return;
+
+                    const usuario = JSON.parse(usuarioStr);
+                    const linkEntrar = document.getElementById('link-entrar-publico');
+
+                    if (usuario.tipo === 'doador') {
+                        linkEntrar.href = '/doador';
+                        linkEntrar.textContent = 'Meu Perfil';
+                    } else if (usuario.tipo === 'instituicao') {
+                        linkEntrar.href = '/instituicao';
+                        linkEntrar.textContent = 'Meu Perfil';
+                    }
+                })();
+            </script>
+        {% elif tipo_cabecalho == 'autenticado' %}
+            <div class="flex items-center gap-4">
+                {% if mostrar_link_voltar %}
+                    <a href="{{ url_link_voltar }}" class="text-sm text-amber-400 hover:text-amber-300">Voltar</a>
+                {% endif %}
+                <a id="link-meu-perfil" href="#" class="hidden text-sm text-amber-400 hover:text-amber-300">Meu Perfil</a>
+                <span class="text-sm text-stone-300">Olá, <strong id="nome-usuario" class="text-stone-100"></strong></span>
+                <a id="link-editar-perfil" href="#" class="hidden text-sm text-amber-400 hover:text-amber-300">Editar Perfil</a>
+                <button onclick="sair()" class="text-sm text-amber-400 hover:text-amber-300">Sair</button>
+            </div>
+            <script>
+                (function() {
+                    const usuarioStr = sessionStorage.getItem('usuario');
+                    if (!usuarioStr) return;
+
+                    const usuario = JSON.parse(usuarioStr);
+                    const linkEditar = document.getElementById('link-editar-perfil');
+                    const linkMeuPerfil = document.getElementById('link-meu-perfil');
+                    const caminhoAtual = window.location.pathname;
+
+                    if (usuario.tipo === 'doador') {
+                        linkEditar.href = '/doador/editar-perfil';
+                        linkMeuPerfil.href = '/doador';
+                        if (caminhoAtual === '/doador') {
+                            linkEditar.classList.remove('hidden');
+                        } else {
+                            linkMeuPerfil.classList.remove('hidden');
+                        }
+                    } else if (usuario.tipo === 'instituicao') {
+                        linkEditar.href = '/instituicao/editar-perfil';
+                        linkMeuPerfil.href = '/instituicao';
+                        if (caminhoAtual === '/instituicao') {
+                            linkEditar.classList.remove('hidden');
+                        } else {
+                            linkMeuPerfil.classList.remove('hidden');
+                        }
+                    }
+                })();
+            </script>
+        {% elif tipo_cabecalho == 'convidado' %}
+            <div id="header-nav">
+                <a href="/entrar" class="text-sm text-amber-400 hover:text-amber-300">Entrar</a>
+            </div>
+        {% endif %}
+    </div>
+</header>

@@ -5,4 +5,3 @@
 
 - Configuração do ambiente de desenvolvimento
   - https://fastapidozero.dunossauro.com/estavel/01/
-

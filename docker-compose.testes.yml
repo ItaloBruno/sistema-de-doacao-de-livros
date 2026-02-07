@@ -1,0 +1,13 @@
+services:
+  postgres_testes:
+    image: postgres:14.4
+    container_name: postgres14-testes-sistema-de-doacao-de-livros
+    environment:
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - volume-postgres14-estudos:/var/lib/postgresql/data
+
+volumes:
+  volume-postgres14-estudos:

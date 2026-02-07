@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block titulo %}Editar Perfil - Sistema de doação de livros{% endblock %}
+
+{% block conteudo %}
+{% set tipo_cabecalho = 'autenticado' %}
+<div class="w-full min-h-screen">
+    {% include "componentes/cabecalho.html" with context %}
+
+    <main class="mx-auto max-w-[1216px] px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-8">
+            <div class="flex items-center gap-4 mb-4">
+                <h2 class="text-3xl font-bold text-stone-900">Editar Perfil</h2>
+            </div>
+        </div>
+
+        <div id="mensagem-erro" class="hidden rounded-md bg-red-50 p-4 mb-6">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800" id="texto-erro"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="mensagem-sucesso" class="hidden rounded-md bg-green-50 p-4 mb-6">
+            <div class="flex">
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800" id="texto-sucesso"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="loading" class="text-center py-12">
+            <p class="text-stone-600">Carregando dados...</p>
+        </div>
+
+        <div id="form-container" class="hidden bg-stone-50 shadow rounded-lg p-6 border border-stone-300">
+            <form id="form-editar-perfil" class="space-y-6">
+                <div>
+                    <label for="nome" class="block text-sm font-medium text-stone-700">
+                        Nome da Instituição <span class="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="nome"
+                        name="nome"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Digite o nome da instituição"
+                    >
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-stone-700">
+                        Email <span class="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Digite o email"
+                    >
+                </div>
+
+                <div>
+                    <label for="descricao" class="block text-sm font-medium text-stone-700">
+                        Descrição <span class="text-red-600">*</span>
+                    </label>
+                    <textarea
+                        id="descricao"
+                        name="descricao"
+                        rows="4"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Descreva a instituição"
+                    ></textarea>
+                </div>
+
+                <div>
+                    <label for="data-fundacao" class="block text-sm font-medium text-stone-700">
+                        Data de Fundação <span class="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="date"
+                        id="data-fundacao"
+                        name="data_fundacao"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                    >
+                </div>
+
+                <div>
+                    <label for="endereco" class="block text-sm font-medium text-stone-700">
+                        Endereço <span class="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="endereco"
+                        name="endereco"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Digite o endereço completo"
+                    >
+                </div>
+
+                <div>
+                    <label for="site" class="block text-sm font-medium text-stone-700">
+                        Site
+                    </label>
+                    <input
+                        type="url"
+                        id="site"
+                        name="site"
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="https://exemplo.com (opcional)"
+                    >
+                </div>
+
+                <div>
+                    <label for="foto" class="block text-sm font-medium text-stone-700">
+                        Foto da Instituição (opcional)
+                    </label>
+                    <div id="foto-atual" class="mb-2"></div>
+                    <input
+                        type="file"
+                        id="foto"
+                        name="foto"
+                        accept="image/*"
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100"
+                    >
+                    <p class="mt-1 text-sm text-stone-500">Deixe em branco para manter a foto atual. Formatos aceitos: JPG, PNG, GIF, WebP (máx. 5MB)</p>
+                </div>
+
+                <hr class="my-6">
+
+                <h3 class="text-lg font-medium text-stone-900">Alterar Senha</h3>
+                <p class="text-sm text-stone-500 mb-4">Preencha os campos abaixo apenas se desejar alterar sua senha</p>
+
+                <div>
+                    <label for="senha-atual" class="block text-sm font-medium text-stone-700">
+                        Senha Atual <span class="text-red-600">*</span>
+                    </label>
+                    <input
+                        type="password"
+                        id="senha-atual"
+                        name="senha_atual"
+                        required
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Digite sua senha atual"
+                    >
+                    <p class="mt-1 text-sm text-stone-500">Obrigatório para confirmar as alterações</p>
+                </div>
+
+                <div>
+                    <label for="nova-senha" class="block text-sm font-medium text-stone-700">
+                        Nova Senha
+                    </label>
+                    <input
+                        type="password"
+                        id="nova-senha"
+                        name="nova_senha"
+                        minlength="6"
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Digite a nova senha (opcional)"
+                    >
+                    <p class="mt-1 text-sm text-stone-500">Deixe em branco para manter a senha atual (mínimo 6 caracteres)</p>
+                </div>
+
+                <div>
+                    <label for="confirmar-senha" class="block text-sm font-medium text-stone-700">
+                        Confirmar Nova Senha
+                    </label>
+                    <input
+                        type="password"
+                        id="confirmar-senha"
+                        name="confirmar_senha"
+                        minlength="6"
+                        class="mt-1 block w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500"
+                        placeholder="Confirme a nova senha"
+                    >
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <a
+                        href="/instituicao"
+                        class="flex-1 bg-stone-300 text-stone-700 px-6 py-3 rounded-md hover:bg-stone-400 font-medium text-center"
+                    >
+                        Cancelar
+                    </a>
+                    <button
+                        type="submit"
+                        class="flex-1 bg-emerald-700 text-white px-6 py-3 rounded-md hover:bg-emerald-800 font-medium"
+                    >
+                        Salvar Alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+<script>
+let usuario = null;
+
+function verificarAutenticacao() {
+    const usuarioStr = sessionStorage.getItem('usuario');
+    if (!usuarioStr) {
+        window.location.href = '/entrar';
+        return;
+    }
+
+    usuario = JSON.parse(usuarioStr);
+    if (usuario.tipo !== 'instituicao') {
+        window.location.href = '/entrar';
+        return;
+    }
+
+    document.getElementById('nome-usuario').textContent = usuario.nome;
+}
+
+function sair() {
+    sessionStorage.removeItem('usuario');
+    window.location.href = '/entrar';
+}
+
+async function carregarDados() {
+    try {
+        const response = await fetch(`/api/instituicoes/${usuario.usuario_id}`);
+
+        if (response.ok) {
+            const instituicao = await response.json();
+            preencherFormulario(instituicao);
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('form-container').classList.remove('hidden');
+        } else {
+            mostrarErro('Erro ao carregar dados do perfil');
+            document.getElementById('loading').classList.add('hidden');
+        }
+    } catch (error) {
+        mostrarErro('Erro ao conectar com o servidor');
+        document.getElementById('loading').classList.add('hidden');
+    }
+}
+
+function preencherFormulario(instituicao) {
+    document.getElementById('nome').value = instituicao.nome;
+    document.getElementById('email').value = instituicao.email;
+    document.getElementById('descricao').value = instituicao.descricao;
+    document.getElementById('data-fundacao').value = instituicao.data_fundacao;
+    document.getElementById('endereco').value = instituicao.endereco;
+    document.getElementById('site').value = instituicao.site || '';
+
+    if (instituicao.foto_url) {
+        document.getElementById('foto-atual').innerHTML = `
+            <p class="text-sm text-stone-600">Foto atual:</p>
+            <img src="${instituicao.foto_url}" alt="${instituicao.nome}" class="w-32 h-32 object-cover rounded mt-2">
+        `;
+    }
+}
+
+function mostrarErro(mensagem) {
+    const divErro = document.getElementById('mensagem-erro');
+    const textoErro = document.getElementById('texto-erro');
+    textoErro.textContent = mensagem;
+    divErro.classList.remove('hidden');
+
+    setTimeout(() => {
+        divErro.classList.add('hidden');
+    }, 5000);
+}
+
+function mostrarSucesso(mensagem) {
+    const divSucesso = document.getElementById('mensagem-sucesso');
+    const textoSucesso = document.getElementById('texto-sucesso');
+    textoSucesso.textContent = mensagem;
+    divSucesso.classList.remove('hidden');
+
+    setTimeout(() => {
+        divSucesso.classList.add('hidden');
+    }, 3000);
+}
+
+document.getElementById('form-editar-perfil').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const nome = document.getElementById('nome').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const descricao = document.getElementById('descricao').value.trim();
+    const dataFundacao = document.getElementById('data-fundacao').value;
+    const endereco = document.getElementById('endereco').value.trim();
+    const site = document.getElementById('site').value.trim();
+    const fotoInput = document.getElementById('foto');
+    const senhaAtual = document.getElementById('senha-atual').value;
+    const novaSenha = document.getElementById('nova-senha').value;
+    const confirmarSenha = document.getElementById('confirmar-senha').value;
+
+    if (!nome || !email || !descricao || !dataFundacao || !endereco || !senhaAtual) {
+        mostrarErro('Preencha todos os campos obrigatórios');
+        return;
+    }
+
+    if (novaSenha && novaSenha !== confirmarSenha) {
+        mostrarErro('As senhas não conferem');
+        return;
+    }
+
+    if (novaSenha && novaSenha.length < 6) {
+        mostrarErro('A nova senha deve ter pelo menos 6 caracteres');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('nome', nome);
+    formData.append('email', email);
+    formData.append('descricao', descricao);
+    formData.append('data_fundacao', dataFundacao);
+    formData.append('endereco', endereco);
+    formData.append('senha_atual', senhaAtual);
+
+    if (site) {
+        formData.append('site', site);
+    }
+
+    if (novaSenha) {
+        formData.append('nova_senha', novaSenha);
+    }
+
+    if (fotoInput.files.length > 0) {
+        const arquivo = fotoInput.files[0];
+
+        if (arquivo.size > 5 * 1024 * 1024) {
+            mostrarErro('O arquivo deve ter no máximo 5MB');
+            return;
+        }
+
+        if (!arquivo.type.startsWith('image/')) {
+            mostrarErro('Por favor, selecione um arquivo de imagem válido');
+            return;
+        }
+
+        formData.append('foto', arquivo);
+    }
+
+    try {
+        const response = await fetch(`/api/instituicoes/${usuario.usuario_id}`, {
+            method: 'PUT',
+            body: formData,
+        });
+
+        if (response.ok) {
+            const instituicaoAtualizada = await response.json();
+
+            usuario.nome = instituicaoAtualizada.nome;
+            usuario.email = instituicaoAtualizada.email;
+            sessionStorage.setItem('usuario', JSON.stringify(usuario));
+
+            document.getElementById('nome-usuario').textContent = usuario.nome;
+
+            mostrarSucesso('Perfil atualizado com sucesso!');
+
+            document.getElementById('senha-atual').value = '';
+            document.getElementById('nova-senha').value = '';
+            document.getElementById('confirmar-senha').value = '';
+
+            setTimeout(() => {
+                window.location.href = '/instituicao';
+            }, 2000);
+        } else {
+            const erro = await response.json();
+            mostrarErro(erro.detail || 'Erro ao atualizar perfil');
+        }
+    } catch (error) {
+        mostrarErro('Erro ao conectar com o servidor');
+    }
+});
+
+verificarAutenticacao();
+carregarDados();
+</script>
+{% endblock %}
