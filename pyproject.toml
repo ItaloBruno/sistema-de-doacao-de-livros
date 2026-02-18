@@ -8,7 +8,9 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13,<4.0"
 dependencies = [
-    "fastapi[standard] (>=0.119.0,<0.120.0)"
+    "fastapi[standard] (>=0.119.0,<0.120.0)",
+    "pydantic-extra-types (>=2.10.6,<3.0.0)",
+    "phonenumbers (>=9.0.17,<10.0.0)"
 ]
 
 
@@ -43,6 +45,7 @@ addopts = '-p no:warnings'
 lint = 'ruff check'
 pre_format = 'ruff check --fix'
 format = 'ruff format'
+formatar_arquivos = "task lint && task pre_format && task format"
 run = 'fastapi dev sistema_de_doacao_de_livros/app.py'
 pre_test = 'task lint'
 test = 'pytest -s -x --cov=sistema_de_doacao_de_livros -vv'
